@@ -15,10 +15,9 @@ export function readFileFromPath(path) {
     } catch (err) {
         if (err.code === "ENOENT") {
             console.warn("Error: file not found: " + path);
-            return "Error: file not found: " + path;
-        } else {
-            throw err;
+            // return "Error: file not found: " + path;
         }
+        throw err;
     }
     return content;
 }

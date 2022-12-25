@@ -86,7 +86,7 @@ export function getLang(kvMap, filePath) {
     }
     // Ace mode not found, keep default.
     if (aceMode === undefined) {
-        console.warn("include-codeblock: unknown language `" + kvMap.lang + "`, use default");
+        console.warn("embed-file: unknown language `" + kvMap.lang + "`, use default");
         return kvMap;
     }
     if (kvMap.fixlang) {

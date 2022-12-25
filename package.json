@@ -1,17 +1,16 @@
 {
-  "name": "gitbook-plugin-include-codeblock",
+  "name": "gitbook-plugin-embed-file",
   "repository": {
     "type": "git",
-    "url": "https://github.com/azu/gitbook-plugin-include-codeblock.git"
+    "url": "https://github.com/pivoto/gitbook-plugin-embed-file.git"
   },
-  "author": "azu",
-  "email": "azuciao@gmail.com",
-  "homepage": "https://github.com/azu/gitbook-plugin-include-codeblock",
+  "author": "pivoto",
+  "homepage": "https://github.com/pivoto/gitbook-plugin-embed-file",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/azu/gitbook-plugin-include-codeblock/issues"
+    "url": "https://github.com/pivoto/gitbook-plugin-embed-file/issues"
   },
-  "version": "3.2.3",
+  "version": "3.2.9",
   "description": "GitBook plugin for including file",
   "main": "lib/include-codeblock.js",
   "bin": {
@@ -27,7 +26,7 @@
     "test": "test"
   },
   "scripts": {
-    "build": "NODE_ENV=production babel src --out-dir lib --source-maps",
+    "build": "babel src --out-dir lib --source-maps",
     "lint": "eslint --cache src/*.js test/*.js",
     "lint:fix": "eslint --fix src/*.js test/*.js",
     "watch": "babel src --out-dir lib --watch --source-maps",

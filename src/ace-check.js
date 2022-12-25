@@ -1,5 +1,5 @@
 /* eslint-disable */
-// Check that ace plugin is loaded after include-codeblock
+// Check that ace plugin is loaded after embed-file
 export function aceCheck() {
     // Check ace is used.
     try {
@@ -9,7 +9,7 @@ export function aceCheck() {
         const aceLoaded = Boolean(require("module")._cache[require.resolve("gitbook-plugin-ace")]);
         if (aceLoaded) {
             console.log(""); // flush
-            console.error("`gitbook-plugin-include-codeblock` plugin must be loaded before `gitbook-plugin-ace`!");
+            console.error("`gitbook-plugin-embed-file` plugin must be loaded before `gitbook-plugin-ace`!");
         }
     } catch (e) {
         console.log(""); // flush

@@ -9,7 +9,7 @@ aceCheck();
 module.exports = {
     hooks: {
         "page:before": function (page) {
-            var options = this.options.pluginsConfig["include-codeblock"];
+            var options = this.options.pluginsConfig["embed-file"];
             var pageDir = path.dirname(page.rawPath);
             var results = parse(page.content, pageDir, options);
             results.forEach((result) => {

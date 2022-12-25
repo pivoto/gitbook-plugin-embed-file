@@ -71,7 +71,7 @@ export function checkMapTypes(kvMap, funcLabel) {
             const rightType = typeof defaultKeyValueMap[key];
             if (!(leftType === rightType)) {
                 console.error(
-                    `include-codeblock: checkMapTypes (${funcLabel}) : wrong value type for key \`${key}\`: key type: \`${leftType}\` (!= \`${rightType}\`)`
+                    `embed-file: checkMapTypes (${funcLabel}) : wrong value type for key \`${key}\`: key type: \`${leftType}\` (!= \`${rightType}\`)`
                 );
             }
         }

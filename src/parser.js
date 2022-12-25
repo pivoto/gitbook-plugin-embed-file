@@ -11,7 +11,8 @@ import { hasTitle } from "./title";
 import { getTemplateContent, readFileFromPath } from "./template";
 import { codeBlockBacktick } from "./backtick-maker";
 
-const markdownLinkFormatRegExp = /\[(?=((?:[^\]]|\\.)*))\1\]\((?=((?:[^)]|\\.)*))\2\)/gm;
+// const markdownLinkFormatRegExp = /\[(?=((?:[^\]]|\\.)*))\1\]\((?=((?:[^)]|\\.)*))\2\)/gm;
+const markdownLinkFormatRegExp = /\[[^\]]*\]\(([^)]*)\)/gm;
 
 const keyEx = "\\w+";
 const kvsepEx = "[:=]";
@@ -95,7 +96,7 @@ export function parseValue(value, type, key) {
         const unescapedvalue = unescapeString(value.substring(1, value.length - 1));
         if (key === "marker" && !markerRegExp.test(unescapedvalue)) {
             console.error(
-                "include-codeblock: parseVariablesFromLabel: invalid value " + `\`${unescapedvalue}\` in key \`marker\``
+                "embed-file: parseVariablesFromLabel: invalid value " + `\`${unescapedvalue}\` in key \`marker\``
             );
             return undefined;
         }
@@ -112,13 +113,13 @@ export function parseValue(value, type, key) {
         }
 
         console.error(
-            "include-codeblock: parseVariablesFromLabel: invalid value " +
+            "embed-file: parseVariablesFromLabel: invalid value " +
                 `\`${value}\` in key \`${key}\`. Expect true or false.`
         );
         return undefined;
     }
 
-    console.error(`include-codeblock: parseVariablesFromLabel: unknown key type \`${type}\` (see options.js)`);
+    console.error(`embed-file: parseVariablesFromLabel: unknown key type \`${type}\` (see options.js)`);
     return undefined;
 }
 
@@ -141,7 +142,7 @@ export function parseVariablesFromLabel(kvMap, label) {
         const value = match[2];
 
         if (!Object.prototype.hasOwnProperty.call(kv, key)) {
-            console.error("include-codeblock: parseVariablesFromLabel: unknown key " + `\`${key}\` (see options.js)`);
+            console.error("embed-file: parseVariablesFromLabel: unknown key " + `\`${key}\` (see options.js)`);
             return;
         }
 
@@ -222,6 +223,20 @@ export function embedCode(kvMap, { filePath, originalPath, label }) {
     const backtick = codeBlockBacktick(content);
     return generateEmbedCode(kvm, { fileName, originalPath, content, backtick });
 }
+export function splitTitleToCommands(title = "") {
+    const result = title.split(/[,\s]+/);
+    if (!result) {
+        return [];
+    }
+    // remove null command
+    return result
+        .map((command) => {
+            return command.trim().replace(/^:/g, "");
+        })
+        .filter((command) => {
+            return command.length > 0;
+        });
+}
 
 /**
  * Parse command using options from pluginConfig.
@@ -234,20 +249,35 @@ export function parse(content, baseDir, options = {}) {
     const results = [];
     const kvMap = initOptions(options);
     let res = true;
+
     while ((res = markdownLinkFormatRegExp.exec(content))) {
-        const [all, label, originalPath] = res;
-        const commands = splitLabelToCommands(label);
+        // eslint-disable-next-line
+        let [all, originalPath] = res;
+        const idx = originalPath.indexOf(" ");
+        let title = "";
+        if (idx > 0) {
+            title = originalPath.substring(idx).replace(/^[\s'"]+|[\s'"]+$/g, "");
+            originalPath = originalPath.substring(0, idx);
+        }
+
+        const commands = splitTitleToCommands(title);
+        // console.log(`embed-file: commands:`, commands);
         if (containIncludeCommand(commands)) {
-            const absolutePath = path.resolve(baseDir, originalPath);
-            const replacedContent = embedCode(kvMap, {
-                filePath: absolutePath,
-                originalPath: originalPath,
-                label
-            });
-            results.push({
-                target: all,
-                replaced: replacedContent
-            });
+            try {
+                const absolutePath = path.resolve(baseDir, originalPath);
+                const replacedContent = embedCode(kvMap, {
+                    filePath: absolutePath,
+                    originalPath: originalPath,
+                    title
+                });
+                // console.log(`embed-file: absolutePath:`, absolutePath, replacedContent);
+                results.push({
+                    target: all,
+                    replaced: replacedContent
+                });
+            } catch (e) {
+                console.warn((e && e.message) || e);
+            }
         }
     }
     return results;
